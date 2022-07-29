@@ -6,7 +6,7 @@
 
 // Create custom texlist
 // Remove this if you would like to use city escape's texture pack
-// And uncomment the Debug line & values on lines 38, 39 below
+// And uncomment the Debug line & values on lines 30, 31 below
 NJS_TEXNAME customlevel_texnames[1000]{};
 NJS_TEXLIST customlevel_texlist = { arrayptrandlength(customlevel_texnames) };
 
