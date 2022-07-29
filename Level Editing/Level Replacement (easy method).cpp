@@ -1,40 +1,37 @@
 #include "pch.h" //or #include "stdafx.h
 
-// Easy replacement method, we are just changing the level geometry & textures
-// To replace more stuff like sky boxes, you need to find their addresses and hook them.
-// Use the complex method if you want to make your level from scratch.
+// SA2B Easy Level Import Script
+// Description: A script that can import any user-given level file or texturepack automatically
+//              Use the complex method if you want to add more complex features to your level.
 
-// Custom texlist (remove if you're using a texlist from the game)
-NJS_TEXNAME customlevel_texnames[NUMBEROFTEXTURES];
+// Create custom texlist
+// Remove this if you would like to use city escape's texture pack
+// And uncomment the Debug line & values on lines 38, 39 below
+NJS_TEXNAME customlevel_texnames[1000]{};
 NJS_TEXLIST customlevel_texlist = { arrayptrandlength(customlevel_texnames) };
 
-LandTableInfo* LoadLandTable(const char* path, NJS_TEXLIST* texlist, const char* texname, const HelperFunctions& helperFunctions) {
-	LandTableInfo* info = new LandTableInfo(helperFunctions.GetReplaceablePath(path));
-	LandTable* landtable = info->getlandtable();
+extern "C"
+{
+	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions)
+	{
+		// Get original City Escape Level
+		HMODULE v0 = **datadllhandle;
 
-	landtable->TextureList = texlist;
-	landtable->TextureName = (char*)texname;
-	
-	return info;
-}
+		// Grab LandTable from City Escape
+		LandTable* Land = (LandTable*)GetProcAddress(v0, "objLandTable0013");
 
-void LandManagerHook(int a1, LandTable* land) {
-	LandTableSA2BModels = false; // the landtable uses the chunk format
-	LoadLandManager(land);
-}
+		// Replace City Escape's LandTable with our own
+		*Land = *(new LandTableInfo(std::string(path) + "\\gd_PC\\level.sa2blvl"))->getlandtable();
 
-extern "C" {
-	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions) {
+		// DEBUG: Use City Escape's Original texture pack
+		// NJS_TEXLIST* texlist_landtx13 = (NJS_TEXLIST*)GetProcAddress(v0, "texlist_landtx13");
 
-		// Get the original landtable pointer
-		HMODULE hmodule = GetModuleHandle(__TEXT("Data_DLL_orig"));
-		LandTable* original_landtable = (LandTable*)GetProcAddress(hmodule, "objLandTable0013"); // "13" is City Escape
+		// Set the level's textures to use our own (replace these values with the comments for city escape)
+		Land->TextureList = &customlevel_texlist; // or texlist_landtx13
+		Land->TextureName = (char*)"TEXTURE"; // or "LANDTX13"
 
-		// Replace it with our custom one
-		original_landtable = LoadLandTable("resource\\gd_pc\\customlevel.sa2lvl", &customlevel_texlist, "pak_name", helperFunctions)->getlandtable();
-
-		// Use this ONLY if your level file ends in ".sa2lvl"; the address is for City Escape only, ask me if you need another address.
-		// WriteCall((void*)0x5DCDF7, LandManagerHook);
+		// IDK what this does lol something with blockbits
+		WriteData<5>((void*)0x5DCE2D, 0x90);
 	}
 
 	__declspec(dllexport) ModInfo SA2ModInfo = { ModLoaderVer };
