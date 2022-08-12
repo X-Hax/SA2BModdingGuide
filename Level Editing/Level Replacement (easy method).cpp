@@ -1,12 +1,21 @@
-#include "pch.h" //or #include "stdafx.h
+#include "pch.h" //or #include "stdafx.h" for older versions of visual studio
 
 // SA2B Easy Level Import Script
-// Description: A script that can import any user-given level file or texturepack automatically
-//              Use the complex method if you want to add more complex features to your level.
+// Description:
+//    A simple script that allows a user to import their level
+//    into Sonic Adventure 2. When creating your mod, make sure
+//    to include the level file in your mod folder following
+//    this structure:
+//
+//    MyMod/gd_PC/level.sa2blvl
+//
+//    Visit the x-hax discord for any questions.
+//    https://discord.gg/gqJCF47
+//
 
-// Create custom texlist
-// Remove this if you would like to use city escape's texture pack
-// And uncomment the Debug line & values on lines 30, 31 below
+// Code that creates a custom texturepack, with a limit of 1000 textures.
+// If you would like to use City Escape's textures, delete these two lines
+// and follow the debug instructions below.
 NJS_TEXNAME customlevel_texnames[1000]{};
 NJS_TEXLIST customlevel_texlist = { arrayptrandlength(customlevel_texnames) };
 
@@ -14,23 +23,24 @@ extern "C"
 {
 	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions)
 	{
-		// Get original City Escape Level
 		HMODULE v0 = **datadllhandle;
 
-		// Grab LandTable from City Escape
+		// Grab LandTable from City Escape.
 		LandTable* Land = (LandTable*)GetProcAddress(v0, "objLandTable0013");
 
-		// Replace City Escape's LandTable with our own
+		// Replace City Escape's LandTable with our own.
 		*Land = *(new LandTableInfo(std::string(path) + "\\gd_PC\\level.sa2blvl"))->getlandtable();
 
-		// DEBUG: Use City Escape's Original texture pack
+		// DEBUG: Uncomment these lines to use City Escape's Original texture pack.
 		// NJS_TEXLIST* texlist_landtx13 = (NJS_TEXLIST*)GetProcAddress(v0, "texlist_landtx13");
+		// Land->TextureList = &texlist_landtx13;
+		// Land->TextureName = (char*)"LANDTX13";
+		
+		// Set the level's textures to use our own. (Delete these to use city escape's textures)
+		Land->TextureList = &customlevel_texlist;
+		Land->TextureName = (char*)"TEXTURE";
 
-		// Set the level's textures to use our own (replace these values with the comments for city escape)
-		Land->TextureList = &customlevel_texlist; // or texlist_landtx13
-		Land->TextureName = (char*)"TEXTURE"; // or "LANDTX13"
-
-		// IDK what this does lol something with blockbits
+		// (Safety feature) disables level chunk system. (whole level will be rendered)
 		WriteData<5>((void*)0x5DCE2D, 0x90);
 	}
 
