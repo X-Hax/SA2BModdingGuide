@@ -1,13 +1,22 @@
-#include "pch.h" //or #include "stdafx.h
+#include "pch.h" //or #include "stdafx.h" for older versions of visual studio.
 
-// This method completely replaces a level, you're in full control of what happens in your level
-// No asset of the original level you are replacing will load unless you tell the game to.
+// SA2B Easy Level Import Script
+// Description:
+//    An advanced script that completely replaces a level, detatching it from any
+//    level-tied features. Use this method to be in full control of what happens
+//    in your level.
+//
+//    No music, skybox, events, etc will load in unless you program it in here.
+//
+//    Visit the x-hax discord for any questions.
+//    https://discord.gg/gqJCF47
+//
 
 HelperFunctions HelperFunctionsGlobal;
 
 LandTableInfo* CurrentLandTableInfo = nullptr;
 
-// Custom texlist (remove if you're using a texlist from the game)
+// Create a custom texture pack (REPLACE NUMBEROFTEXTURES WITH REAL NUMBER)
 NJS_TEXNAME customlevel_texnames[NUMBEROFTEXTURES];
 NJS_TEXLIST customlevel_texlist = { arrayptrandlength(customlevel_texnames) };
 
