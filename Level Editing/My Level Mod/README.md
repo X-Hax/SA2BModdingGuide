@@ -9,12 +9,13 @@ Feel free to contribute or message me for any information! J-N-R
 
 ## Features
 - Support for importing a custom level and texture pack into Sonic Adventure 2.
+- Automatically moves files into the right place for ease of use.
 - Includes a level options file to move options out of code.
 - Level options currently support
 - * Level start position
 - * Level end position
 - * Level ID (to choose which level you would like to port over)
-- Automatically moves files into the right place for ease of use.
+- * Auto update DETECTION
 
 ## Future goals
 - Add SET file functionality for easy goal ring placement.
