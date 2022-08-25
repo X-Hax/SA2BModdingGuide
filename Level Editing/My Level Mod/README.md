@@ -5,6 +5,8 @@ making their own custom level can simply republish the mod to share with others.
 
 Feel free to contribute or message me for any information! J-N-R
 
+[Download Latest Version](https://github.com/X-Hax/SA2BModdingGuide/releases)
+
 ## Features
 - Support for importing a custom level and texture pack into Sonic Adventure 2.
 - Includes a level options file to move options out of code.
