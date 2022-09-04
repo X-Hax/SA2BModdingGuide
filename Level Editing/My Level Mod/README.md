@@ -24,4 +24,5 @@ Feel free to contribute or message me for any information! J-N-R
 
 ## NOTE
 Do NOT update "VERSION.txt" unless you have updated My Level Mod. It will prompt a manual update to My Level Mod users.
+
 If you would like to advance the project, all you need is visual studio code and the Sonic Adventure 2 Mod Loader libmodutils files. Contact the x-hax team at discord for information about necessary libraries.
