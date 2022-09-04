@@ -9,9 +9,10 @@ Feel free to contribute or message me for any information! J-N-R
 
 ## Features
 - Support for importing a custom level and texture pack into Sonic Adventure 2.
+- Support for importing custom splines into your level.
+- Moves traditionally code-bound options to an easy to use ini file.
 - Automatically moves files into the right place for ease of use.
 - Auto update DETECTION
-- Includes a level options file to move options out of code.
 - Level options currently support
 - * Level start position
 - * Level end position
@@ -19,7 +20,7 @@ Feel free to contribute or message me for any information! J-N-R
 
 ## Future goals
 - Add SET file functionality for easy goal ring placement.
-- Add Spline functionality for loops / rails.
+- ~~Add Spline functionality for loops / rails.~~
 
 ## NOTE
 Do NOT update "VERSION.txt" unless you have updated My Level Mod. It will prompt a manual update to My Level Mod users.
