@@ -8,7 +8,7 @@
 #include <filesystem>
 
 //
-// IniReader.cpp v2.4
+// IniReader.cpp v3
 // 
 // Description: 
 //   Ini file reader for My Level Mod and SA2 modding purposes.
