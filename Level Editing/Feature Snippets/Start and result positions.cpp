@@ -1,21 +1,40 @@
 #include "pch.h" //or #include "stdafx.h
 
-StartPosition level_startpos = { LevelIDs_CityEscape, 0, 0, 0, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }; // Singleplayer & multiplayer (SP, P1, P2) start positions & Y rotation
-StartPosition level_endpos = { LevelIDs_CityEscape, 0, 0, 0, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }; // Singleplayer & multiplayer (SP, P1, P2) end positions & Y rotation (where sonic does the win stance)
-LevelEndPosition level_2pintro = { LevelIDs_CityEscape, 0, 0, 0, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }; // P1 & P2 start positions & Y rotation in multiplayer
-LevelEndPosition level_endposM23 = { LevelIDs_CityEscape, 0, 0, 0, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }; // Mission 2 & 3 end positions & Y rotation (where sonic does the win stance)
+//
+// Code snippet:
+// 	How to change level start and end position.
+//
+// Notes:
+// 	Intended for use in its own mod or as a part of a mod's dll.
+//	Follow the x-hax modding tutorial for help on importing
+//      dependencies.
+//
 
+// Step 1: Create a position
+NJS_VECTOR position = { 0, 0, 0 };
+
+// Step 2: Create a 'StartPosition' object
+StartPosition start_position = { LevelIDs_CityEscape, 0, 0, 0, position, position, position };
+// Here's the overview of the above object:
+/* { 
+ *  LevelID to use (in this case 13),
+ *  x y and z rotation,
+ *  singleplayer start,
+ *  1p multiplayer start,
+ *  2p multiplayer start
+ *  }
+ */
+
+// Step 3: Run the function 'RegisterStartPosition' in the Init function
 extern "C"
 {
 	__declspec(dllexport) void Init(const char* path, const HelperFunctions& helperFunctions)
 	{
-		helperFunctions.RegisterStartPosition(Characters_Sonic, level_startpos);
-		helperFunctions.Register2PIntroPosition(Characters_Sonic, level_2pintro);
-
-		if (helperFunctions.Version >= 5)
-		{
-			helperFunctions.RegisterEndPosition(Characters_Sonic, level_endpos);
-			helperFunctions.RegisterMission23EndPosition(Characters_Sonic, level_endposM23);
-		}
+		helperFunctions.RegisterStartPosition(Characters_Sonic, start_position);
+		// Overview of above: RegisterStartPosition(Character you want, StartPosition object)
+		
+		// Step 4 (Optional): Set end/victory pose position
+		helperFunctions.RegisterStartPosition(Characters_Sonic, start_position);
+		// Note: You may want to create another StartPosition object for this
 	}
 }
