@@ -220,7 +220,11 @@ void InitCurrentLevelAndScreenCount_r() {
 	if (CurrentLevel == std::stoi(iniReader->getLevelID())) {
 		InitCurrentLevelAndScreenCount_h.Original();
 		printDebug("Level load detected. Loading splines.");
-		LoadStagePaths(iniReader->loadSplines());
+		
+		LoopHead** splines = iniReader->loadSplines();
+		if (splines) {
+			LoadStagePaths(splines);
+		}
 	}
 }
 
