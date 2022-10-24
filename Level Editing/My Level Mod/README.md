@@ -1,7 +1,9 @@
 # My Level Mod
-An easy to use level importer for Sonic Adventure 2! Installed as a regular mod, this tool
-will give you access to level configuration tools and is built as a template so that anyone
-making their own custom level can simply republish the mod to share with others.
+A custom level importer for Sonic Adventure 2! The goal of this project is to allow anyone
+to make a level for Sonic Adventure 2 without having to write a single line of code. 
+Installed as a regular mod, this tool will give you access to level configuration tools
+and is built as a template so that anyone making their own custom level can simply
+republish the mod to share with others.
 
 Feel free to contribute or message me for any information! J-N-R
 
@@ -13,10 +15,11 @@ Feel free to contribute or message me for any information! J-N-R
 - Moves traditionally code-bound options to an easy to use ini file.
 - Automatically moves files into the right place for ease of use.
 - Auto update DETECTION
-- Level options currently support
+- Level options currently support (all of these are optional)
 - * Level start position
 - * Level end position
 - * Level ID (to choose which level you would like to port over)
+- * Simple Death Plane (Have sonic die under a certain y-level)
 
 ## Future goals
 - Add SET file functionality for easy goal ring placement.
