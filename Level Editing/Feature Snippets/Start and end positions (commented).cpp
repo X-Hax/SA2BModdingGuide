@@ -1,6 +1,5 @@
 #include "pch.h" //or #include "stdafx.h
 
-//
 // Code snippet:
 // 	How to change level start and end position.
 //
@@ -8,7 +7,6 @@
 // 	Intended for use in its own mod or as a part of a mod's dll.
 //	Follow the x-hax modding tutorial for help on importing
 //      dependencies.
-//
 
 // Step 1: Create a position
 NJS_VECTOR position = { 0, 0, 0 };
