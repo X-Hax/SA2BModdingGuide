@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "IniReader.h"
-#include <exception>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -8,7 +7,7 @@
 #include <filesystem>
 
 //
-// IniReader.cpp v3
+// IniReader.cpp v3.3
 // 
 // Description: 
 //   Ini file reader for My Level Mod and SA2 modding purposes.
@@ -16,10 +15,22 @@
 //   spline files and return official LoopHead (spline) objects.
 //
 
+ObjectFunc(LoopController, 0x497B50);
+ObjectFunc(RailController, 0x4980C0);
+ObjectFunc(CameraSplineController, nullptr);
+ObjectFunc(AltCameraSplineController, nullptr);
+
+// Convenience method used to grab level id (right now used for debug printing).
+std::string IniReader::getLevelID() {
+	return std::to_string(levelID);
+}
+
 IniReader::IniReader(const char* path, const HelperFunctions& helperFunctions) : helperFunctions(helperFunctions) {
 	this->optionsPath = _strdup((std::string(path) + "\\level_options.ini").c_str());;
 	this->gdPCPath = _strdup((std::string(path) + "\\gd_PC").c_str());
 	this->levelID = 13;
+	this->simpleDeathPlane = 0;
+	this->hasSimpleDeathPlane = false;
 }
 
 // Read and configure options from 'level_options.ini'.
@@ -69,15 +80,34 @@ void IniReader::loadIniOptions() {
 					printDebug(e.what());
 				}
 
+				NJS_VECTOR coordinates{coords[0], coords[1], coords[2]};
 				if (isStart) {
 					printDebug("Level Start coordinates set to: " + token);
-					StartPosition startpos = { levelID, 0, 0, 0, { coords[0], coords[1], coords[2] }, { coords[0], coords[1], coords[2] }, { coords[0], coords[1], coords[2] } };
-					helperFunctions.RegisterStartPosition(Characters_Sonic, startpos);
+					StartPosition startPos = { levelID, 0, 0, 0, coordinates, coordinates, coordinates };
+					helperFunctions.RegisterStartPosition(Characters_Sonic, startPos);
 				}
 				else {
 					printDebug("Level End coordinates set to: " + token);
-					StartPosition endpos = { levelID, 0, 0, 0, { coords[0], coords[1], coords[2] }, { coords[0], coords[1], coords[2] }, { coords[0], coords[1], coords[2] } };
-					helperFunctions.RegisterEndPosition(Characters_Sonic, endpos);
+					StartPosition endPos = { levelID, 0, 0, 0, coordinates, coordinates, coordinates };
+					helperFunctions.RegisterEndPosition(Characters_Sonic, endPos);
+				}
+			}
+
+			// Read simple death plane.
+			else if (token == "Simple_Death_Plane") {
+				std::getline(iniFile, token);
+
+				try {
+					simpleDeathPlane = std::stof(token);
+					hasSimpleDeathPlane = true;
+				}
+				catch (const std::exception& e) {}
+
+				if (hasSimpleDeathPlane) {
+					printDebug("Simple Death Plane set to ON. Player will now die under y=" + std::to_string(simpleDeathPlane) + ".");
+				}
+				else {
+					printDebug("Simple Death Plane set to OFF.");
 				}
 			}
 		}
@@ -91,7 +121,7 @@ void IniReader::loadIniOptions() {
 
 // Automatically detect and read from spline ini files.
 LoopHead** IniReader::loadSplines() {
-	std::vector<LoopHead*> railSplines{};
+	std::vector<LoopHead*> splines{};
 
 	// Find ini files in the gd_PC folder, assume they are spline files.
 	for (const auto& file : std::filesystem::directory_iterator(gdPCPath)) {
@@ -133,86 +163,91 @@ LoopHead** IniReader::loadSplines() {
 					while (token.find("[") == std::string::npos) {
 						std::getline(splineFile, token);
 					}
+	
+					// Read spline data and create spline objects.
+					while (token.find("[") != std::string::npos && !splineFile.eof()) {
+						int xRot{}, zRot{};
+						float distance{};
+						float coords[3]{};
 
-					// If spline is for rails, load spline as rail data.
-					if (code == "4980C0") {
-						ObjectFunc(RailController, 0x4980C0);
+						for (int i = 0; i < 4; i++) {
+							std::getline(splineFile, token, '=');
 
-						while (token.find("[") != std::string::npos && !splineFile.eof()) {
-							int xRot{}, zRot{};
-							float distance{};
-							float coords[3]{};
+							if (token == "XRotation") {
+								std::getline(splineFile, token);
+								xRot = std::stoi(token, 0, 16);
+							}
+							else if (token == "ZRotation") {
+								std::getline(splineFile, token);
+								zRot = std::stoi(token, 0, 16);
+							}
+							else if (token == "Distance") {
+								std::getline(splineFile, token);
+								distance = std::stof(token);
+							}
+							else if (token == "Position") {
+								std::getline(splineFile, token);
 
-							for (int i = 0; i < 4; i++) {
-								std::getline(splineFile, token, '=');
+								// Remove spaces from line.
+								std::string::iterator end_pos = std::remove(token.begin(), token.end(), ' ');
+								token.erase(end_pos, token.end());
 
-								if (token == "XRotation") {
-									std::getline(splineFile, token);
-									xRot = std::stoi(token, 0, 16);
-								}
-								else if (token == "ZRotation") {
-									std::getline(splineFile, token);
-									zRot = std::stoi(token, 0, 16);
-								}
-								else if (token == "Distance") {
-									std::getline(splineFile, token);
-									distance = std::stof(token);
-								}
-								else if (token == "Position") {
-									std::getline(splineFile, token);
-
-									// Remove spaces from line.
-									std::string::iterator end_pos = std::remove(token.begin(), token.end(), ' ');
-									token.erase(end_pos, token.end());
-
-									std::istringstream ss(token);
-									try {
-										std::string temp{};
-										for (int i = 0; i < 3; i++) {
-											std::getline(ss, temp, ',');
-											coords[i] = std::stof(temp);
-										}
-									}
-									// Print debug information in case of error.
-									catch (const std::exception& e) {
-										printDebug("(Warning) Unexpected error/value in spline point: " + token + ".");
-										printDebug("(Warning) Deleting spline.");
-										printDebug(e.what());
-										return nullptr;
+								std::istringstream ss(token);
+								try {
+									std::string temp{};
+									for (int i = 0; i < 3; i++) {
+										std::getline(ss, temp, ',');
+										coords[i] = std::stof(temp);
 									}
 								}
-								else if (token == "\n") {
-									break;
-								}
-								else if (token != "\n") {
+								// Print debug information in case of error.
+								catch (const std::exception& e) {
 									printDebug("(Warning) Unexpected error/value in spline point: " + token + ".");
 									printDebug("(Warning) Deleting spline.");
+									printDebug(e.what());
 									return nullptr;
 								}
 							}
-
-							// Create new point from read data.
-							LoopPoint point{ xRot, zRot, distance, { coords[0], coords[1], coords[2] } };
-							points.push_back(point);
-
-							// Skip rest of lines to find new point.
-							while (token.find("[") == std::string::npos && !splineFile.eof()) {
-								std::getline(splineFile, token);
+							else if (token == "\n") {
+								break;
+							}
+							else if (token != "\n") {
+								printDebug("(Warning) Unexpected error/value in spline point: " + token + ".");
+								printDebug("(Warning) Deleting spline.");
+								return nullptr;
 							}
 						}
-						LoopHead* spline = new LoopHead;
-						spline->anonymous_0 = (int16_t)1;
-						spline->Count = (int16_t)points.size();
-						spline->TotalDistance = totalDistance;
-						spline->Points = new LoopPoint[points.size()];
+
+						// Create new point from read data.
+						LoopPoint point{ xRot, zRot, distance, { coords[0], coords[1], coords[2] } };
+						points.push_back(point);
+
+						// Skip rest of lines to find new point.
+						while (token.find("[") == std::string::npos && !splineFile.eof()) {
+							std::getline(splineFile, token);
+						}
+					}
+					LoopHead* spline = new LoopHead;
+					spline->anonymous_0 = (int16_t)1;
+					spline->Count = (int16_t)points.size();
+					spline->TotalDistance = totalDistance;
+					spline->Points = new LoopPoint[points.size()];
+
+					// If spline is for rails, load spline as rail data.
+					if (code == "4980C0") {
 						spline->Object = (ObjectFuncPtr)RailController;
-						std::copy(points.begin(), points.end(), spline->Points);
-						railSplines.push_back(spline);
+					}
+					// If spline is for loops, load spline as loop data.
+					else if (code == "497B50") {
+						spline->Object = (ObjectFuncPtr)LoopController;
 					}
 					else {
-						printDebug("Alternate/Unsupported spline code " + token + "detected.");
-						printDebug("Stay tuned for future updates.");
+						printDebug("(Warning) Unknown spline code detected. Deleting spline.");
+						return nullptr;
 					}
+
+					std::copy(points.begin(), points.end(), spline->Points);
+					splines.push_back(spline);
 				}
 				// Print debugs if there was an error loading the spline.
 				catch (const std::exception& e) {
@@ -227,16 +262,16 @@ LoopHead** IniReader::loadSplines() {
 		}
 	}
 
-	if (railSplines.size() != 0) {
-		printDebug(std::to_string(railSplines.size()) + " rail spline(s) successfully added.");
+	if (splines.size() != 0) {
+		printDebug(std::to_string(splines.size()) + " rail spline(s) successfully added.");
 
-		const int size = railSplines.size() + 1;
-		LoopHead** railSplinesArray = new LoopHead*[size];
-		std::copy(railSplines.begin(), railSplines.end(), railSplinesArray);
+		const int size = splines.size() + 1;
+		LoopHead** splinesArray = new LoopHead*[size];
+		std::copy(splines.begin(), splines.end(), splinesArray);
 
-		railSplinesArray[size - 1] = nullptr;
+		splinesArray[size - 1] = nullptr;
 
-		return railSplinesArray;
+		return splinesArray;
 	}
 	else {
 		printDebug("No splines found.");
@@ -249,12 +284,6 @@ LoopHead** IniReader::loadSplines() {
 void IniReader::printDebug(std::string message) {
 	PrintDebug(("[My Level Mod] " + message).c_str());
 }
-
-// Convenience method used to grab level id (right now used for debug printing).
-std::string IniReader::getLevelID() {
-	return std::to_string(levelID);
-}
-
 
 // Notes:
 // For start position and setting rotation, 0x4000 == 90 degrees.
