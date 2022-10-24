@@ -1,5 +1,5 @@
 # Feature Snippets
-Feel free to copy and paste the above code into your own mods.
+Feel free to **copy and paste** the above code into your own mods.
 
 'Commented' versions are better for learning, while uncommented
 versions are better for copying.
@@ -10,3 +10,6 @@ have only one 'extern "C"' section, one 'Init' function, etc.
 If you need to use the functionality of multiple snippets,
 manually merge and include everything under one single version
 of the 'extern "C"' section, init functions, etc.
+
+Don't mind the licenses, you should be 100% fine to copy.
+(They're there for legal reasons because of my job)
