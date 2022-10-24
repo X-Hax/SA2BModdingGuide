@@ -1,5 +1,5 @@
 # Feature Snippets
-Feel free to **copy and paste** the above code into your own mods.
+### Code you can copy and paste into your own mods!
 
 'Commented' versions are better for learning, while uncommented
 versions are better for copying.
