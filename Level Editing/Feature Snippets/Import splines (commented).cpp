@@ -6,7 +6,7 @@
 // Notes:
 // 	    Intended for use in its own mod or as a part of a mod's dll.
 //	    Follow the x-hax modding tutorial for help on importing
-//      dependencies.
+//          dependencies.
 
 // Step 1: Import a 'spline controller.'
 // This will turn your spline into a rail or loop.
