@@ -24,6 +24,7 @@ Feel free to contribute or message me for any information! J-N-R
 ## Future goals
 - Add SET file functionality for easy goal ring placement.
 - ~~Add Spline functionality for loops / rails.~~
+- Add support for SA1
 
 ## NOTE
 Do NOT update "VERSION.txt" unless you have updated My Level Mod. It will prompt a manual update to My Level Mod users.
