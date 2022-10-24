@@ -4,6 +4,8 @@
 class IniReader {
 	public:
 		int levelID;
+		float simpleDeathPlane;
+		bool hasSimpleDeathPlane;
 		IniReader(const char* path, const HelperFunctions& helperFunctions);
 		void loadIniOptions();
 		LoopHead** loadSplines();
@@ -14,5 +16,5 @@ class IniReader {
 		const char* gdPCPath;
 		const HelperFunctions& helperFunctions;
 		void printDebug(std::string message);
+		bool isNumber(const std::string& s);
 };
-
