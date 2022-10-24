@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "iniReader.h"
-#include <exception>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -8,7 +7,7 @@
 #include <filesystem>
 #include <curl/curl.h>
 
-// MyLevelMod.cpp Version 3
+// MyLevelMod.cpp Version 3.3
 // Description:
 //    A Script that can import your mod into Sonic Adventure 2,
 //    including the feature of being able to read from a user-inputted
@@ -27,7 +26,7 @@
 NJS_TEXNAME customlevel_texnames[1000]{};
 NJS_TEXLIST customlevel_texlist = { arrayptrandlength(customlevel_texnames) };
 
-const float VERSION = 3.0f;
+const float VERSION = 3.3f;
 IniReader* iniReader;
 
 // Helper function to print debug messages.
@@ -217,10 +216,10 @@ void loadLandTable(const char* path) {
 void InitCurrentLevelAndScreenCount_r();
 FunctionHook<void> InitCurrentLevelAndScreenCount_h(InitCurrentLevelAndScreenCount, InitCurrentLevelAndScreenCount_r);
 void InitCurrentLevelAndScreenCount_r() {
-	if (CurrentLevel == std::stoi(iniReader->getLevelID())) {
-		InitCurrentLevelAndScreenCount_h.Original();
+	InitCurrentLevelAndScreenCount_h.Original();
+	if (CurrentLevel == iniReader->levelID) {
 		printDebug("Level load detected. Loading splines.");
-		
+
 		LoopHead** splines = iniReader->loadSplines();
 		if (splines) {
 			LoadStagePaths(splines);
@@ -250,6 +249,14 @@ extern "C" {
 		}
 
 		loadLandTable(path);
+	}
+	
+    __declspec(dllexport) void __cdecl OnFrame() {
+		if (GameState == GameStates_Ingame && CurrentLevel == iniReader->levelID && iniReader->hasSimpleDeathPlane) {
+			if (MainCharObj1 != nullptr && MainCharObj1[0] != nullptr && MainCharObj1[0]->Position.y <= iniReader->simpleDeathPlane) {
+				GameState = GameStates_NormalRestart;
+			}
+		}
 	}
 
 	__declspec(dllexport) ModInfo SA2ModInfo = { ModLoaderVer };
