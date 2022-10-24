@@ -5,8 +5,7 @@
 versions are better for copying.
 
 ## Notes
-These snippets may have overlapping logic. Your dll file should
-have only one 'extern "C"' section, one 'Init' function, etc.
-If you need to use the functionality of multiple snippets,
-manually merge and include everything under one single version
-of the 'extern "C"' section, init functions, etc.
+If you plan on using multiple snippets, you may end up with overlapping
+logic. In that case, simply do your best to try to merge code that are under duplicate
+methods together. In the end, you should only have one extern "C" and only one
+Init, OnFrame, etc function if any.
