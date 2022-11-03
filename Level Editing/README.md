@@ -17,8 +17,5 @@ to your level that you seperate each feature into its own function so the code i
 added to a level, feel free to see MainMemory's "[Emerald Coast in SA2](https://github.com/MainMemory/SA2EmeraldCoast/tree/master/LevelTest)"
 level mod, which includes custom camera setups, rails, custom enemies, and even a custom boss. For more information, please join [the x-hax discord](https://discord.gg/gqJCF47).
 
-## MyLevelMod
-The MyLevelMod source code is also included! This project is open source, so please feel free to update or improve the mod if you'd like. If you are a beginner or are simply modifying your own level, its recommended that you stick to one of the other methods- however, if you wonder how certain features were implemented, feel free to check it out!
-
 ## Feature Snippets
 The files in this folder are code snippets that show you examples of implementing certain features. Feel free to copy them and use them in your own mod.
