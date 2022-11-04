@@ -19,3 +19,5 @@ level mod, which includes custom camera setups, rails, custom enemies, and even 
 
 ## Feature Snippets
 The files in this folder are code snippets that show you examples of implementing certain features. Feel free to copy them and use them in your own mod.
+
+If you'd like to see how some of these features are used in action, check out the ["My Level Mod" source code](https://github.com/J-N-R/My-Level-Mod).
