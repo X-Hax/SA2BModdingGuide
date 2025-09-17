@@ -14,7 +14,7 @@ extern "C"
 
 		// Uncomment these to use city escape's textures
 		// NJS_TEXLIST* texlist_landtx13 = (NJS_TEXLIST*)GetProcAddress(v0, "texlist_landtx13");
-		// Land->TextureList = &texlist_landtx13;
+		// Land->TextureList = texlist_landtx13;
 		// Land->TextureName = (char*)"LANDTX13";
 		
 		// Delete these to use city escape's textures
