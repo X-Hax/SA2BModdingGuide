@@ -33,7 +33,7 @@ extern "C"
 
 		// DEBUG: Uncomment these lines to use City Escape's Original texture pack.
 		// NJS_TEXLIST* texlist_landtx13 = (NJS_TEXLIST*)GetProcAddress(v0, "texlist_landtx13");
-		// Land->TextureList = &texlist_landtx13;
+		// Land->TextureList = texlist_landtx13;
 		// Land->TextureName = (char*)"LANDTX13";
 		
 		// Set the level's textures to use our own. (Delete these to use city escape's textures)
